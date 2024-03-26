@@ -52,6 +52,7 @@ class Game:
         self.score = 0
 
         self.screen = pygame.display.set_mode((self.width, self.height))
+        pygame.display.set_caption("Threes -> clone")
         self.score_font = pygame.font.SysFont("monospace", 50, bold=True)
 
         #first tiles
