@@ -52,7 +52,7 @@ class Game:
         self.score = 0
 
         self.screen = pygame.display.set_mode((self.width, self.height))
-        self.font = pygame.font.SysFont("monospace", 25)
+        self.score_font = pygame.font.SysFont("monospace", 50, bold=True)
 
         #first tiles
         for i in range(np.random.randint(2, 4+1)):
@@ -82,11 +82,19 @@ class Game:
 
         self.screen.fill(white)
 
+
+        #UI
+        score_label = self.score_font.render(str(self.score), 1, dark_gray)
+        score_rect = score_label.get_rect()
+        score_rect.center = (self.width / 2, self.height / 8)
+        self.screen.blit(score_label, score_rect)
+
+
+
+        #BOARD
         hx = self.width / 12
         hy = 1.555555555 * hx   #proportion for pretty scaled images c:
         # hy = self.height / 9
-
-
 
         dx = (self.width - self.nX*hx) / 2
         dy = (self.height - self.nY*hy) / 2
@@ -116,9 +124,9 @@ class Game:
         for i in range(self.nX):
             for j in range(self.nY):
                 value = self.board[i][j]
-                if value >= 3:
+                if value > 2:
                     delta_score = 1
-                    while value > 2:
+                    while value > 1:
                         delta_score *= 3
                         value //= 3
                     self.score += delta_score
