@@ -53,9 +53,12 @@ class Game:
         self.width = 600
         self.height = 700
         self.board = np.zeros((self.nX, self.nY))
+        self.tile_tab = [1, 2, 3, 3, 3, 3]
         self.running = True
         self.clock = pygame.time.Clock()
         self.fps = fps
+
+        self.score = 0
 
         self.screen = pygame.display.set_mode((self.width, self.height))
         self.font = pygame.font.SysFont("monospace", 25)
@@ -63,6 +66,7 @@ class Game:
         #first tiles
         for i in range(np.random.randint(2, 4+1)):
             self.new_tile()
+
 
     def new_tile(self, edge: Direction = None):
         if edge != None:
@@ -80,7 +84,7 @@ class Game:
                 x = np.random.randint(0, self.nX)
                 y = int((3-edge)/2 * (self.nY-1))
                 if self.board[x][y] == 0:
-                    self.board[x][y] = 3
+                    self.board[x][y] = np.random.choice(self.tile_tab)
                     break
 
     def draw(self):
@@ -116,60 +120,63 @@ class Game:
         self.board = board_copy
         return True
 
+    def count_score(self):
+        self.score = 0
+        for i in range(self.nX):
+            for j in range(self.nY):
+                value = self.board[i][j]
+                if value >= 3:
+                    delta_score = 1
+                    while value > 2:
+                        delta_score *= 3
+                        value //= 3
+                    self.score += delta_score
+
     def move(self, direction: Direction):
+        def move_indexes(x, y, dx, dy):
+            #empty space
+            if self.board[x+dx][y+dy] == 0:
+                self.board[x+dx][y+dy] = self.board[x][y]
+                self.board[x][y] = 0
+                return True
+            # 1 
+            if self.board[x+dx][y+dy] == 1:
+                if self.board[x][y] == 2:
+                    self.board[x+dx][y+dy] = 3
+                    self.board[x][y] = 0
+                    return True
+                return False
+            # 2 
+            if self.board[x+dx][y+dy] == 2:
+                if self.board[x][y] == 1:
+                    self.board[x+dx][y+dy] = 3
+                    self.board[x][y] = 0
+                    return True
+                return False
+            #same value
+            if self.board[x+dx][y+dy] == self.board[x][y]:
+                self.board[x+dx][y+dy] *= 2
+                self.board[x][y] = 0
+                return True
+            return False
+        
         toReturn = False
         if direction == Direction.UP:
             for x in range(self.nX):
                 for y in range(1, self.nY):
-                    #empty space
-                    if self.board[x][y-1] == 0:
-                        self.board[x][y-1] = self.board[x][y]
-                        self.board[x][y] = 0
-                        toReturn = True
-                    #same value
-                    elif self.board[x][y-1] == self.board[x][y]:
-                        self.board[x][y-1] *= 2
-                        self.board[x][y] = 0
-                        toReturn = True
+                    toReturn = move_indexes(x, y, 0, -1) or toReturn
         elif direction == Direction.RIGHT:
             for x in range(self.nX-2, -1, -1):
                 for y in range(self.nY):
-                    #empty space
-                    if self.board[x+1][y] == 0:
-                        self.board[x+1][y] = self.board[x][y]
-                        self.board[x][y] = 0
-                        toReturn = True
-                    #same value
-                    elif self.board[x+1][y] == self.board[x][y]:
-                        self.board[x+1][y] *= 2
-                        self.board[x][y] = 0
-                        toReturn = True
+                    toReturn = move_indexes(x, y, 1, 0) or toReturn
         elif direction == Direction.DOWN:
             for x in range(self.nX):
                 for y in range(self.nY-2, -1, -1):
-                    #empty space
-                    if self.board[x][y+1] == 0:
-                        self.board[x][y+1] = self.board[x][y]
-                        self.board[x][y] = 0
-                        toReturn = True
-                    #same value
-                    elif self.board[x][y+1] == self.board[x][y]:
-                        self.board[x][y+1] *= 2
-                        self.board[x][y] = 0
-                        toReturn = True
+                    toReturn = move_indexes(x, y, 0, 1) or toReturn
         elif direction == Direction.LEFT:
             for x in range(1, self.nX):
                 for y in range(self.nY):
-                    #empty space
-                    if self.board[x-1][y] == 0:
-                        self.board[x-1][y] = self.board[x][y]
-                        self.board[x][y] = 0
-                        toReturn = True
-                    #same value
-                    elif self.board[x-1][y] == self.board[x][y]:
-                        self.board[x-1][y] *= 2
-                        self.board[x][y] = 0
-                        toReturn = True
+                    toReturn = move_indexes(x, y, -1, 0) or toReturn
         return toReturn
         
     
@@ -184,6 +191,9 @@ class Game:
             #check if game is over
             if self.check_game_over():
                 self.running = False
+            
+            #score
+            self.count_score()
 
             #drawing
             self.draw()
@@ -219,7 +229,7 @@ class Game:
             #time control and refreshing display
             self.clock.tick(self.fps)
             pygame.display.flip()
-            
+
         
         #exit pygame
         pygame.quit()
