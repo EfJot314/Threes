@@ -11,9 +11,28 @@ pygame.init()
 white = (255, 255, 255)
 black = (0, 0, 0)
 gray = (220, 220, 220)
+dark_gray = (180, 180, 180)
 red = (255, 0, 0)
 green = (0, 255, 0)
 blue = (0, 0, 255)
+
+#images
+images = {
+    1: pygame.image.load("./images/threes1.png"),
+    2: pygame.image.load("./images/threes2.png"),
+    3: pygame.image.load("./images/threes3.png"),
+    6: pygame.image.load("./images/threes6.png"),
+    12: pygame.image.load("./images/threes12.png"),
+    24: pygame.image.load("./images/threes24.png"),
+    48: pygame.image.load("./images/threes48.png"),
+    96: pygame.image.load("./images/threes96.png"),
+    192: pygame.image.load("./images/threes192.png"),
+    384: pygame.image.load("./images/threes384.png"),
+    768: pygame.image.load("./images/threes768.png"),
+    1536: pygame.image.load("./images/threes1536.png"),
+    3072: pygame.image.load("./images/threes3072.png"),
+    6144: pygame.image.load("./images/threes6144.png"),
+}
 
 #directions
 class Direction(Enum):
@@ -65,26 +84,28 @@ class Game:
                     break
 
     def draw(self):
+
         self.screen.fill(white)
 
-        hx = self.width / 10
-        hy = self.height / 10
+        hx = self.width / 12
+        hy = 1.555555555 * hx   #proportion for pretty scaled images c:
+        # hy = self.height / 9
+
+
 
         dx = (self.width - self.nX*hx) / 2
         dy = (self.height - self.nY*hy) / 2
 
+        margin = 20
+        pygame.draw.rect(self.screen, gray, (dx-margin, dy-margin, self.nX*hx+2*margin, self.nY*hy+2*margin))
         for i in range(self.nX):
             for j in range(self.nY):
                 xi = dx + i*hx
                 yi =dy + j*hy
-                pygame.draw.rect(self.screen, gray, (xi, yi, 0.95*hx, 0.95*hy))
+                pygame.draw.rect(self.screen, dark_gray, (xi, yi, 0.95*hx, 0.95*hy))
                 if self.board[i][j] != 0:
-                    color_delta = min(3 * self.board[i][j], 100)
-                    pygame.draw.rect(self.screen, (200-color_delta, 200-color_delta, 200-color_delta), (xi, yi, 0.95*hx, 0.95*hy))
-                    number_label = self.font.render(str(int(self.board[i][j])), 1, black)
-                    label_rect = number_label.get_bounding_rect()
-                    label_rect.center = (xi+hx/2, yi+hy/2)
-                    self.screen.blit(number_label, label_rect)
+                    img = pygame.transform.scale(images[self.board[i][j]], (0.95*hx, 0.95*hy))
+                    self.screen.blit(img, (xi, yi))
 
     def check_game_over(self):
         board_copy = self.board.copy()
@@ -160,7 +181,7 @@ class Game:
             #get screen size
             self.width, self.height = self.screen.get_size()
 
-            #check if game over
+            #check if game is over
             if self.check_game_over():
                 self.running = False
 
@@ -195,9 +216,10 @@ class Game:
 
 
 
-            #time control and refresh display
+            #time control and refreshing display
             self.clock.tick(self.fps)
             pygame.display.flip()
+            
         
         #exit pygame
         pygame.quit()
@@ -207,7 +229,7 @@ class Game:
 
 
 #creating and running a game
-game = Game(4, 5, 60)
+game = Game(4, 4, 60)
 game.run()
 
             
