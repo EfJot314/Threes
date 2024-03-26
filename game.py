@@ -1,8 +1,9 @@
 import numpy as np
-from enum import Enum
+
 import pygame
 from pygame import *
 
+from directions import Direction
 
 pygame.init()
 
@@ -18,34 +19,24 @@ blue = (0, 0, 255)
 
 #images
 images = {
-    1: pygame.image.load("./images/threes1.png"),
-    2: pygame.image.load("./images/threes2.png"),
-    3: pygame.image.load("./images/threes3.png"),
-    6: pygame.image.load("./images/threes6.png"),
-    12: pygame.image.load("./images/threes12.png"),
-    24: pygame.image.load("./images/threes24.png"),
-    48: pygame.image.load("./images/threes48.png"),
-    96: pygame.image.load("./images/threes96.png"),
-    192: pygame.image.load("./images/threes192.png"),
-    384: pygame.image.load("./images/threes384.png"),
-    768: pygame.image.load("./images/threes768.png"),
-    1536: pygame.image.load("./images/threes1536.png"),
-    3072: pygame.image.load("./images/threes3072.png"),
-    6144: pygame.image.load("./images/threes6144.png"),
+    1: pygame.image.load("./resources/threes1.png"),
+    2: pygame.image.load("./resources/threes2.png"),
+    3: pygame.image.load("./resources/threes3.png"),
+    6: pygame.image.load("./resources/threes6.png"),
+    12: pygame.image.load("./resources/threes12.png"),
+    24: pygame.image.load("./resources/threes24.png"),
+    48: pygame.image.load("./resources/threes48.png"),
+    96: pygame.image.load("./resources/threes96.png"),
+    192: pygame.image.load("./resources/threes192.png"),
+    384: pygame.image.load("./resources/threes384.png"),
+    768: pygame.image.load("./resources/threes768.png"),
+    1536: pygame.image.load("./resources/threes1536.png"),
+    3072: pygame.image.load("./resources/threes3072.png"),
+    6144: pygame.image.load("./resources/threes6144.png"),
 }
 
-#directions
-class Direction(Enum):
-    UP = 1
-    RIGHT = 2
-    DOWN = 3
-    LEFT = 4
-    
 
 
-
-
-#game class
 class Game:
     def __init__(self, nX: int, nY: int, fps: int):
         self.nX = nX
@@ -238,9 +229,7 @@ class Game:
 
 
 
-#creating and running a game
-game = Game(4, 4, 60)
-game.run()
+
 
             
 
