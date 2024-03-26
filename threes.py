@@ -26,8 +26,7 @@ class Direction(Enum):
 
 
 
-
-
+#game class
 class Game:
     def __init__(self, nX: int, nY: int, fps: int):
         self.nX = nX
@@ -87,6 +86,14 @@ class Game:
                     label_rect.center = (xi+hx/2, yi+hy/2)
                     self.screen.blit(number_label, label_rect)
 
+    def check_game_over(self):
+        board_copy = self.board.copy()
+        for direction in Direction:
+            if self.move(direction):
+                self.board = board_copy
+                return False
+        self.board = board_copy
+        return True
 
     def move(self, direction: Direction):
         toReturn = False
@@ -153,6 +160,10 @@ class Game:
             #get screen size
             self.width, self.height = self.screen.get_size()
 
+            #check if game over
+            if self.check_game_over():
+                self.running = False
+
             #drawing
             self.draw()
 
@@ -164,6 +175,7 @@ class Game:
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
                         self.running = False
+                    #moving
                     elif event.key == pygame.K_UP:
                         if self.move(Direction.UP):
                             self.new_tile(Direction.UP)
@@ -191,6 +203,10 @@ class Game:
         pygame.quit()
 
 
+
+
+
+#creating and running a game
 game = Game(4, 5, 60)
 game.run()
 
