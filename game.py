@@ -45,7 +45,20 @@ class Game:
         self.height = 700
 
         self.board = np.zeros((self.nX, self.nY))
-        self.tile_tab = [1, 2, 3, 3, 3, 3]
+        self.tile_tabs = [
+                            [1, 2, 3, 3],
+                            [1, 2, 3, 3, 3, 3],
+                            [1, 2, 3, 3, 3, 3, 3, 6, 6],
+                            [1, 1, 1, 2, 2, 2, 3, 3, 3, 3, 3, 3, 6, 6, 6, 12, 12, 24, 24],
+                            [1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 6, 6, 6, 12, 12, 24, 24, 48, 96],
+                            [1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 6, 6, 6, 12, 12, 24, 24, 48, 48, 96, 96, 192],
+                            [1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 6, 6, 6, 12, 12, 24, 24, 48, 48, 96, 96, 192, 384],
+                            [1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 6, 6, 6, 12, 12, 24, 24, 48, 48, 96, 96, 192, 384, 768],
+                            [1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 6, 6, 6, 12, 12, 24, 24, 48, 48, 96, 96, 192, 384, 768, 1536]
+                        ]
+        
+        self.score = 0
+        
         self.next_tile = 3
         self.running = True
 
@@ -66,15 +79,14 @@ class Game:
         for i in range(np.random.randint(2, 4+1)):
             self.new_tile()
 
-        self.score = 0
 
 
     def new_tile(self, edge: Direction = None):
+        #select edge
         if edge != None:
             edge = edge.value
         else:
             edge = np.random.randint(1, 4+1)
-        
         #left - right
         while edge % 2 == 0:
             x = (edge-1) // 2
@@ -91,7 +103,44 @@ class Game:
                 self.board[x][y*(self.nY-1)] = self.next_tile
                 self.moving_board[x][self.nY+1-y] = edge
                 break
-        self.next_tile = np.random.choice(self.tile_tab)
+
+        """
+        scores:
+        1 -> 0
+        2 -> 0
+        3 -> 3
+        6 -> 9
+        12 -> 27
+        24 -> 81
+        48 -> 243
+        96 -> 729
+        192 -> 2187
+        384 -> 6561
+        768 -> 19683
+        1536 -> 59049
+        3072 -> 177147
+        6144 -> 531441
+        """
+
+        #random next tile
+        index = 0
+        if self.score > 3 * 9:                      # 3 x 6
+            index += 1
+        if self.score > 5 * 9:                      # 5 x 6
+            index += 1
+        if self.score > 3 * 81:                     # 3 x 24
+            index += 1
+        if self.score > 3 * 729:                    # 3 x 96
+            index += 1
+        if self.score > 3 * 2187:                   # 3 x 192
+            index += 1
+        if self.score > 3 * 6561:                   # 3 x 384
+            index += 1
+        if self.score > 3 * 19683:                  # 3 x 768
+            index += 1
+        if self.score > 3 * 59049:                  # 3 x 1536
+            index += 1
+        self.next_tile = np.random.choice(self.tile_tabs[index])
 
     def draw(self):
         #background
@@ -192,6 +241,23 @@ class Game:
         return True
 
     def count_score(self):
+        """
+        scores:
+        1 -> 0
+        2 -> 0
+        3 -> 3
+        6 -> 9
+        12 -> 27
+        24 -> 81
+        48 -> 243
+        96 -> 729
+        192 -> 2187
+        384 -> 6561
+        768 -> 19683
+        1536 -> 59049
+        3072 -> 177147
+        6144 -> 531441
+        """
         self.score = 0
         for i in range(self.nX):
             for j in range(self.nY):
