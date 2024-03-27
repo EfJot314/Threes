@@ -46,6 +46,7 @@ class Game:
 
         self.board = np.zeros((self.nX, self.nY))
         self.tile_tab = [1, 2, 3, 3, 3, 3]
+        self.next_tile = 3
         self.running = True
 
         self.clock = pygame.time.Clock()
@@ -78,42 +79,45 @@ class Game:
                 x = int((edge-2)/2 * (self.nX-1))
                 y = np.random.randint(0, self.nY)
                 if self.board[x][y] == 0:
-                    self.board[x][y] = np.random.choice(self.tile_tab)
+                    self.board[x][y] = self.next_tile
                     break
             else:
                 x = np.random.randint(0, self.nX)
                 y = int((3-edge)/2 * (self.nY-1))
                 if self.board[x][y] == 0:
-                    self.board[x][y] = np.random.choice(self.tile_tab)
+                    self.board[x][y] = self.next_tile
                     break
+        self.next_tile = np.random.choice(self.tile_tab)
 
     def draw(self):
         #background
         self.screen.fill(white)
+
+        margin = 20
+        hx = self.width / 12
+        hy = 1.555555555 * hx   #proportion for pretty scaled images c:
+        # hy = self.height / 9
 
         #UI
         score_label = self.score_font.render(str(self.score), 1, dark_gray)
         score_rect = score_label.get_rect()
         score_rect.center = (self.width / 2, self.height / 8)
         self.screen.blit(score_label, score_rect)
+        pygame.draw.rect(self.screen, dark_gray, (self.width/2-hx/2-margin/2, self.height*7/9-margin/2, hx+2*margin/2, hy+2*margin/2))
+        self.screen.blit(pygame.transform.scale(images[self.next_tile], (1*hx, 1*hy)), (self.width/2-hx/2, self.height*7/9))
 
         #BOARD
-        hx = self.width / 12
-        hy = 1.555555555 * hx   #proportion for pretty scaled images c:
-        # hy = self.height / 9
-
         dx = (self.width - self.nX*hx) / 2
         dy = (self.height - self.nY*hy) / 2
 
-        #draw floor
-        margin = 20
+        #floor (places)
         pygame.draw.rect(self.screen, gray, (dx-margin, dy-margin, self.nX*hx+2*margin, self.nY*hy+2*margin))
         for i in range(self.nX):
             for j in range(self.nY):
                 xi = dx + i*hx
                 yi = dy + j*hy
                 pygame.draw.rect(self.screen, dark_gray, (xi, yi, 0.95*hx, 0.95*hy))
-        #draw tiles
+        #tiles
         for i in range(self.nX):
             for j in range(self.nY):
                 xi = dx + i*hx
