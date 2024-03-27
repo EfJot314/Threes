@@ -139,9 +139,9 @@ class Game:
             for j in range(self.nY):
                 if self.board[i][j] == 0:
                     return False
-                if i > 0 and self.board[i-1][j] == self.board[i][j] or self.board[i-1][j] + self.board[i][j] == 3:
+                if i > 0 and ((self.board[i-1][j] == self.board[i][j] and (self.board[i-1][j]+self.board[i][j])%3 == 0) or self.board[i-1][j]+self.board[i][j] == 3):
                     return False
-                if j > 0 and self.board[i][j-1] == self.board[i][j] or self.board[i][j-1] + self.board[i][j] == 3:
+                if j > 0 and ((self.board[i][j-1] == self.board[i][j] and (self.board[i][j-1]+self.board[i][j])%3 == 0) or self.board[i][j-1]+self.board[i][j] == 3):
                     return False
         return True
 
