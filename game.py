@@ -38,7 +38,7 @@ images = {
 
 
 class Game:
-    def __init__(self, nX: int, nY: int, fps: int):
+    def __init__(self, nX: int, nY: int, fps: int, speed: float = 6):
         self.nX = nX
         self.nY = nY
         self.width = 600
@@ -52,9 +52,9 @@ class Game:
         self.clock = pygame.time.Clock()
         self.fps = fps
         
-        self.moving = False
+        self.moving = True
         self.moving_counter = 0
-        self.moving_time = int(self.fps / 6)
+        self.moving_time = int(self.fps / speed)
         self.moving_board = np.zeros((self.nX+2, self.nY+2))    #+2, because I will use self.nX, self.nY and -1 as indexes
         self.board_copy = self.board.copy()
 
@@ -147,27 +147,37 @@ class Game:
                     img = pygame.transform.scale(images[self.board[i][j]], (0.95*hx, 0.95*hy))
                     self.screen.blit(img, (xi, yi))
         #moving new tiles (up - down)
-        # found = False
-        # for i in range(self.nX):
-        #     if self.moving_board[i][-1] > 0:
-        #         found = True
-        #         xi = dx + i*hx
-        #         yi = dy + (self.moving_counter / self.moving_time) * hy
-        #         img = pygame.transform.scale(images[self.board[i][0]], (0.95*hx, 0.95*hy))
-        #         self.screen.blit(img, (xi, yi))
-        #         break
-        #     if self.moving_board[i][self.nY] > 0:
-        #         found = True
-        #         xi = dx + i*hx
-        #         yi = dy + (self.nY - self.moving_counter / self.moving_time) * hy
-        #         img = pygame.transform.scale(images[self.board[i][self.nY-1]], (0.95*hx, 0.95*hy))
-        #         self.screen.blit(img, (xi, yi))
-        #         break
-        # #moving new tiles (left - right)
-        # if not found:
-        #     for j in range(self.nY):
-        #         if self.moving_board[-1][j] > 0:
-        #             pass
+        found = False
+        for i in range(self.nX):
+            if self.moving_board[i][-1] > 0:
+                found = True
+                xi = dx + i*hx
+                yi = dy + (self.moving_counter / self.moving_time - 1) * hy
+                img = pygame.transform.scale(images[self.board[i][0]], (0.95*hx, 0.95*hy))
+                self.screen.blit(img, (xi, yi))
+                break
+            elif self.moving_board[i][self.nY] > 0:
+                found = True
+                xi = dx + i*hx
+                yi = dy + (self.nY - self.moving_counter / self.moving_time) * hy
+                img = pygame.transform.scale(images[self.board[i][self.nY-1]], (0.95*hx, 0.95*hy))
+                self.screen.blit(img, (xi, yi))
+                break
+        #moving new tiles (left - right)
+        if not found:
+            for j in range(self.nY):
+                if self.moving_board[-1][j] > 0:
+                    xi = dx + (self.moving_counter / self.moving_time - 1) * hx
+                    yi = dy + j*hy
+                    img = pygame.transform.scale(images[self.board[0][j]], (0.95*hx, 0.95*hy))
+                    self.screen.blit(img, (xi, yi))
+                    break
+                elif self.moving_board[self.nX][j] > 0:
+                    xi = dx + (self.nX - self.moving_counter / self.moving_time) * hx
+                    yi = dy + j*hy
+                    img = pygame.transform.scale(images[self.board[self.nX-1][j]], (0.95*hx, 0.95*hy))
+                    self.screen.blit(img, (xi, yi))
+                    break
 
 
     def check_game_over(self):
