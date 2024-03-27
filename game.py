@@ -80,12 +80,14 @@ class Game:
                 y = np.random.randint(0, self.nY)
                 if self.board[x][y] == 0:
                     self.board[x][y] = self.next_tile
+                    self.moving_board[x][y] = edge
                     break
             else:
                 x = np.random.randint(0, self.nX)
                 y = int((3-edge)/2 * (self.nY-1))
                 if self.board[x][y] == 0:
                     self.board[x][y] = self.next_tile
+                    self.moving_board[x][y] = edge
                     break
         self.next_tile = np.random.choice(self.tile_tab)
 
@@ -99,12 +101,15 @@ class Game:
         # hy = self.height / 9
 
         #UI
+        #score
         score_label = self.score_font.render(str(self.score), 1, dark_gray)
         score_rect = score_label.get_rect()
         score_rect.center = (self.width / 2, self.height / 8)
         self.screen.blit(score_label, score_rect)
+        #next tile
         pygame.draw.rect(self.screen, dark_gray, (self.width/2-hx/2-margin/2, self.height*7/9-margin/2, hx+2*margin/2, hy+2*margin/2))
         self.screen.blit(pygame.transform.scale(images[self.next_tile], (1*hx, 1*hy)), (self.width/2-hx/2, self.height*7/9))
+
 
         #BOARD
         dx = (self.width - self.nX*hx) / 2
@@ -123,6 +128,7 @@ class Game:
                 xi = dx + i*hx
                 yi = dy + j*hy
                 if self.moving:
+                    #moving tiles
                     if self.board_copy[i][j] > 0:
                         if self.moving_board[i][j] == Direction.UP.value:
                             yi = dy + (j - self.moving_counter / self.moving_time) * hy
@@ -133,6 +139,18 @@ class Game:
                         elif self.moving_board[i][j] == Direction.RIGHT.value:
                             xi = dx + (i + self.moving_counter / self.moving_time) * hx
                         img = pygame.transform.scale(images[self.board_copy[i][j]], (0.95*hx, 0.95*hy))
+                        self.screen.blit(img, (xi, yi))
+                    #moving new tiles
+                    elif (i == 0 or j == 0 or i == self.nX-1 or j == self.nY-1) and self.board[i][j] > 0 and self.moving_board[i][j] > 0:
+                        if self.moving_board[i][j] == Direction.UP.value:
+                            yi = dy + (self.nX - self.moving_counter / self.moving_time) * hy
+                        elif self.moving_board[i][j] == Direction.LEFT.value:
+                            xi = dx + (self.nY - self.moving_counter / self.moving_time) * hx
+                        elif self.moving_board[i][j] == Direction.DOWN.value:
+                            yi = dy + (self.moving_counter / self.moving_time - 1) * hy
+                        elif self.moving_board[i][j] == Direction.RIGHT.value:
+                            xi = dx + (self.moving_counter / self.moving_time - 1) * hx
+                        img = pygame.transform.scale(images[self.board[i][j]], (0.95*hx, 0.95*hy))
                         self.screen.blit(img, (xi, yi))
                 elif self.board[i][j] > 0:
                     img = pygame.transform.scale(images[self.board[i][j]], (0.95*hx, 0.95*hy))
