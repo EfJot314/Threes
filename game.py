@@ -1,4 +1,5 @@
 import numpy as np
+import sys
 
 import pygame
 from pygame import *
@@ -38,7 +39,7 @@ images = {
 
 
 class Game:
-    def __init__(self, nX: int, nY: int, fps: int, speed: float = 6):
+    def __init__(self, nX: int, nY: int, fps: int, speed: float = 6, screen: pygame.surface.Surface = None):
         self.nX = nX
         self.nY = nY
         self.width = 600
@@ -71,8 +72,12 @@ class Game:
         self.moving_board = np.zeros((self.nX+2, self.nY+2))    #+2, because I will use self.nX, self.nY and -1 as indexes
         self.board_copy = self.board.copy()
 
-        self.screen = pygame.display.set_mode((self.width, self.height))
-        pygame.display.set_caption("Threes -> clone")
+        self.screen = screen
+        if self.screen == None:
+            self.screen = pygame.display.set_mode((self.width, self.height))
+            pygame.display.set_caption("Threes -> clone")
+        else:
+            self.width, self.height = self.screen.get_size()
         self.score_font = pygame.font.SysFont("monospace", 50, bold=True)
 
         #first tiles
@@ -356,6 +361,8 @@ class Game:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.running = False
+                    pygame.quit()
+                    sys.exit(0)
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
                         self.running = False

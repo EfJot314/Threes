@@ -3,9 +3,11 @@ from menu import Menu
 
 
 
+#application main loop
 menu = Menu()
 
 while True:
+    #get user action
     action = menu.run()
 
     #quit
@@ -13,7 +15,7 @@ while True:
         break
     #start game
     elif action == 1:
-        game = Game(4, 4, 60, 10)
+        game = Game(4, 4, 60, 10, menu.screen)
         game.run()
 
 

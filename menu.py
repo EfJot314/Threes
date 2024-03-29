@@ -29,15 +29,54 @@ class Menu:
         self.screen = pygame.display.set_mode((self.width, self.height))
         pygame.display.set_caption("Threes -> clone")
 
+        self.title_font = pygame.font.SysFont("monospace", 50, bold=True)
         self.font = pygame.font.SysFont("monospace", 30, bold=True)
+
+        self.mousePos = pygame.mouse.get_pos()
+
+        self.overPlay, self.overQuit = False, False
 
 
     def draw(self):
+        #background
         self.screen.fill(white)
+
+        #title label
+        title_label = self.title_font.render("Threes!", 1, black)
+        title_rect = title_label.get_rect()
+        title_rect.center = (self.width / 2, self.height / 8)
+        self.screen.blit(title_label, title_rect)
+
+        #play button
+        play_label = self.font.render("play", 1, black)
+        play_rect = play_label.get_rect()
+        play_rect.center = (self.width / 2, self.height * 3 / 8)
+        if play_rect.scale_by(1.5).collidepoint(self.mousePos):
+            self.overPlay = True
+            pygame.draw.rect(self.screen, dark_gray, play_rect.scale_by(1.5))
+        else:
+            self.overPlay = False
+            pygame.draw.rect(self.screen, gray, play_rect.scale_by(1.5))
+        self.screen.blit(play_label, play_rect)
+
+        #quit button
+        quit_label = self.font.render("quit", 1, black)
+        quit_rect = quit_label.get_rect()
+        quit_rect.center = (self.width / 2, self.height * 4 / 8)
+        if quit_rect.scale_by(1.5).collidepoint(self.mousePos):
+            self.overQuit = True
+            pygame.draw.rect(self.screen, dark_gray, quit_rect.scale_by(1.5))
+        else:
+            self.overQuit = False
+            pygame.draw.rect(self.screen, gray, quit_rect.scale_by(1.5))
+        self.screen.blit(quit_label, quit_rect)
+
 
     def run(self):
 
         while True:
+            #get mouse position
+            self.mousePos = pygame.mouse.get_pos()
 
             #drawing
             self.draw()
@@ -52,16 +91,17 @@ class Menu:
                         return 0
                     elif event.key == pygame.K_SPACE:
                         return 1
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    if self.overQuit:
+                        return 0
+                    elif self.overPlay:
+                        return 1
 
 
 
             #time control and refreshing display
             self.clock.tick(self.fps)
             pygame.display.flip()
-
-
-
-
 
 
 
