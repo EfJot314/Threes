@@ -390,8 +390,6 @@ class Game:
             pygame.display.flip()
 
         
-        #exit pygame
-        pygame.quit()
 
 
 
