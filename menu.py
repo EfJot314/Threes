@@ -99,9 +99,71 @@ class Menu:
 
 
 
-            #time control and refreshing display
+            #time control and refreshing screen
             self.clock.tick(self.fps)
             pygame.display.flip()
+
+
+
+class GameOverView:
+    def __init__(self, score: int, screen: pygame.surface.Surface = None):
+        self.score = score
+
+        self.width = 600
+        self.height = 700
+
+        self.clock = pygame.time.Clock()
+        self.fps = 60
+
+        self.screen = screen
+        if self.screen == None:
+            self.screen = pygame.display.set_mode((self.width, self.height))
+            pygame.display.set_caption("Threes -> clone")
+        else:
+            self.width, self.height = self.screen.get_size()
+
+        self.title_font = pygame.font.SysFont("monospace", 50, bold=True)
+        self.font = pygame.font.SysFont("monospace", 30, bold=True)
+
+        self.mousePos = pygame.mouse.get_pos()
+
+        self.overPlay, self.overQuit = False, False
+
+    
+    def draw(self):
+        self.screen.fill(white)
+
+
+    def run(self):
+        while True:
+            #get mouse position
+            self.mousePos = pygame.mouse.get_pos()
+
+            #drawing
+            self.draw()
+
+
+            #event handling
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    return 0
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        return 0
+                    elif event.key == pygame.K_SPACE:
+                        return 1
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    if self.overQuit:
+                        return 0
+                    elif self.overPlay:
+                        return 1
+
+
+
+            #time control and refreshing screen
+            self.clock.tick(self.fps)
+            pygame.display.flip()
+
 
 
 

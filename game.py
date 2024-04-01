@@ -340,6 +340,7 @@ class Game:
             #check if game is over
             if self.check_game_over():
                 self.running = False
+                return self.score
 
             #moving tiles (visualization)
             if self.moving:
@@ -366,6 +367,7 @@ class Game:
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
                         self.running = False
+                        return 0
                     #moving
                     elif not self.moving:
                         self.board_copy = self.board.copy()
@@ -392,7 +394,7 @@ class Game:
 
 
 
-            #time control and refreshing display
+            #time control and refreshing screen
             self.clock.tick(self.fps)
             pygame.display.flip()
 

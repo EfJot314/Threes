@@ -1,5 +1,5 @@
 from game import Game
-from menu import Menu
+from menu import Menu, GameOverView
 
 
 
@@ -16,6 +16,8 @@ while True:
     #start game
     elif action == 1:
         game = Game(4, 4, 60, 10, menu.screen)
-        game.run()
-
+        score = game.run()
+        if score > 0:
+            game_over = GameOverView(score)
+            game_over.run()
 
