@@ -127,11 +127,53 @@ class GameOverView:
 
         self.mousePos = pygame.mouse.get_pos()
 
-        self.overPlay, self.overQuit = False, False
+        self.overRetry, self.overMenu, self.overQuit = False, False, False
 
     
     def draw(self):
         self.screen.fill(white)
+
+        #game over label
+        game_over_label = self.title_font.render("Game Over", 1, black)
+        game_over_rect = game_over_label.get_rect()
+        game_over_rect.center = (self.width / 2, self.height / 8)
+        self.screen.blit(game_over_label, game_over_rect)
+
+        #retry button
+        retry_label = self.font.render("retry", 1, black)
+        retry_rect = retry_label.get_rect()
+        retry_rect.center = (self.width / 2, self.height * 3 / 8)
+        if retry_rect.scale_by(1.5).collidepoint(self.mousePos):
+            self.overRetry = True
+            pygame.draw.rect(self.screen, dark_gray, retry_rect.scale_by(1.5))
+        else:
+            self.overRetry = False
+            pygame.draw.rect(self.screen, gray, retry_rect.scale_by(1.5))
+        self.screen.blit(retry_label, retry_rect)
+
+        #quit to menu button
+        menu_label = self.font.render("menu", 1, black)
+        menu_rect = menu_label.get_rect()
+        menu_rect.center = (self.width / 2, self.height * 4 / 8)
+        if menu_rect.scale_by(1.5).collidepoint(self.mousePos):
+            self.overMenu = True
+            pygame.draw.rect(self.screen, dark_gray, menu_rect.scale_by(1.5))
+        else:
+            self.overMenu = False
+            pygame.draw.rect(self.screen, gray, menu_rect.scale_by(1.5))
+        self.screen.blit(menu_label, menu_rect)
+
+        #quit button
+        quit_label = self.font.render("quit", 1, black)
+        quit_rect = quit_label.get_rect()
+        quit_rect.center = (self.width / 2, self.height * 5 / 8)
+        if quit_rect.scale_by(1.5).collidepoint(self.mousePos):
+            self.overQuit = True
+            pygame.draw.rect(self.screen, dark_gray, quit_rect.scale_by(1.5))
+        else:
+            self.overQuit = False
+            pygame.draw.rect(self.screen, gray, quit_rect.scale_by(1.5))
+        self.screen.blit(quit_label, quit_rect)
 
 
     def run(self):
@@ -155,8 +197,10 @@ class GameOverView:
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     if self.overQuit:
                         return 0
-                    elif self.overPlay:
+                    elif self.overMenu:
                         return 1
+                    elif self.overRetry:
+                        return 2
 
 
 
